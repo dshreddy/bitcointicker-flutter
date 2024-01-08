@@ -1,9 +1,8 @@
 import 'dart:convert';
-
+// import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'coin_data.dart';
-import 'dart:io' show Platform;
 import 'package:http/http.dart' as http;
 
 class PriceScreen extends StatefulWidget {
@@ -14,16 +13,11 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
+  
   String selected = "USD";
   int first = 45060;
   int second = 2263;
   int third = 65;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +99,8 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: Platform.isIOS ? getCupertinoPicker() : getDropdownButton(),
+            // child: Platform.isIOS?getCupertinoPicker():getDropdownButton(),
+            child: getDropdownButton(),
           ),
         ],
       ),
@@ -124,6 +119,7 @@ class _PriceScreenState extends State<PriceScreen> {
     }
 
     return DropdownButton<String>(
+      dropdownColor: Colors.lightBlue,
       value: selected,
       items: dropdownItems,
       onChanged: (value) {
