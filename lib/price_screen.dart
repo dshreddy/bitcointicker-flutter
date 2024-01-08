@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'coin_data.dart';
 import 'package:http/http.dart' as http;
 
+String apikey = YOUR_API_KEY;
+
 class PriceScreen extends StatefulWidget {
   const PriceScreen({super.key});
 
@@ -13,7 +15,6 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  
   String selected = "USD";
   int first = 45060;
   int second = 2263;
@@ -122,10 +123,17 @@ class _PriceScreenState extends State<PriceScreen> {
       dropdownColor: Colors.lightBlue,
       value: selected,
       items: dropdownItems,
-      onChanged: (value) {
-        setState(() async {
+      onChanged: (value) async {
+        setState(() {
           selected = value!;
-          updateUI();
+        });
+        var data1 = await getBitcoinValue(selected);
+        var data2 = await getEtheriumValue(selected);
+        var data3 = await getLitecoinValue(selected);
+        setState(() {
+          first = data1;
+          second = data2;
+          third = data3;
         });
       },
     );
@@ -142,10 +150,17 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
       backgroundColor: Colors.lightBlue,
       itemExtent: 32,
-      onSelectedItemChanged: (value) {
+      onSelectedItemChanged: (value) async {
         setState(() {
           selected = currenciesList[value];
-          updateUI();
+        });
+        var data1 = await getBitcoinValue(selected);
+        var data2 = await getEtheriumValue(selected);
+        var data3 = await getLitecoinValue(selected);
+        setState(() {
+          first = data1;
+          second = data2;
+          third = data3;
         });
       },
       children: dropdownItems,
@@ -157,7 +172,7 @@ class _PriceScreenState extends State<PriceScreen> {
       'rest.coinapi.io',
       'v1/exchangerate/BTC/$currency',
       {
-        'apikey': 'FB87FE86-63E6-44B8-B783-FBC7FE8CC8C6',
+        'apikey': apikey,
       },
     );
     var response = await http.get(url);
@@ -166,8 +181,7 @@ class _PriceScreenState extends State<PriceScreen> {
       var rate = jsonResponse["rate"].toInt();
       return rate;
     } else {
-      print('Request failed with status: ${response.statusCode}.');
-      return 0;
+      return -1;
     }
   }
 
@@ -176,17 +190,15 @@ class _PriceScreenState extends State<PriceScreen> {
       'rest.coinapi.io',
       'v1/exchangerate/ETH/$currency',
       {
-        'apikey': 'FB87FE86-63E6-44B8-B783-FBC7FE8CC8C6',
+        'apikey': apikey,
       },
     );
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      var rate = jsonResponse["rate"].toInt();
-      return rate;
+      return jsonResponse["rate"].toInt();
     } else {
-      print('Request failed with status: ${response.statusCode}.');
-      return 0;
+      return -1;
     }
   }
 
@@ -195,28 +207,15 @@ class _PriceScreenState extends State<PriceScreen> {
       'rest.coinapi.io',
       'v1/exchangerate/LTC/$currency',
       {
-        'apikey': 'FB87FE86-63E6-44B8-B783-FBC7FE8CC8C6',
+        'apikey': apikey,
       },
     );
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
-      var rate = jsonResponse["rate"].toInt();
-      return rate;
+      return jsonResponse["rate"].toInt();
     } else {
-      print('Request failed with status: ${response.statusCode}.');
-      return 0;
+      return -1;
     }
-  }
-
-  void updateUI() async {
-    var first_ = await getBitcoinValue(selected);
-    var second_ = await getEtheriumValue(selected);
-    var third_ = await getLitecoinValue(selected);
-    setState(() {
-      first = first_;
-      second = second_;
-      third = third_;
-    });
   }
 }
